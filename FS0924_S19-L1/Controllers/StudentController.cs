@@ -1,4 +1,5 @@
-﻿using FS0924_S19_L1.Models;
+﻿using FS0924_S19_L1.DTOs.Student;
+using FS0924_S19_L1.Models;
 using FS0924_S19_L1.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,13 @@ namespace FS0924_S19_L1.Controllers
 
             if (studentsList == null)
             {
-                return BadRequest(new { message = "Something went wrong!" });
+                return BadRequest(
+                    new GetStudentsResponseDto()
+                    {
+                        Message = "Something went wrong!",
+                        Students = null,
+                    }
+                );
             }
 
             if (studentsList.Count == 0)
@@ -35,20 +42,46 @@ namespace FS0924_S19_L1.Controllers
 
             var text = count == 1 ? $"{count} student found!" : $"{count} students found!";
 
-            return Ok(new { message = text, students = studentsList });
+            return Ok(new GetStudentsResponseDto() { Message = text, Students = studentsList });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStudent([FromBody] Student student)
+        public async Task<IActionResult> CreateStudent(
+            [FromBody] CreateStudentRequestDto createStudent
+        )
         {
+            var student = new Student()
+            {
+                Name = createStudent.Name,
+                Surname = createStudent.Surname,
+                EmailAddress = createStudent.EmailAddress,
+            };
+
             var result = await _studentService.CreateStudentAsync(student);
 
             if (!result)
             {
-                return BadRequest(new { message = "Something went wrong!" });
+                return BadRequest(
+                    new CreateStudentResponseDto() { Message = "Something went wrong!" }
+                );
             }
 
-            return Ok(new { message = "Student created successfully!" });
+            return Ok(new CreateStudentResponseDto() { Message = "Student created successfully!" });
+        }
+
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetStudentByEmail(string email)
+        {
+            var result = await _studentService.GetStudentbyEmailAsync(email);
+
+            if (result == null)
+            {
+                return BadRequest(
+                    new GetStudentResponseDto() { Message = "Something went wrong!" }
+                );
+            }
+
+            return Ok(new GetStudentResponseDto() { Message = "Student found!", Student = result });
         }
     }
 }

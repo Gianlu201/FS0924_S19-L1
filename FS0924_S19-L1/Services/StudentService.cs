@@ -1,4 +1,5 @@
 ﻿using FS0924_S19_L1.Data;
+using FS0924_S19_L1.DTOs.Student;
 using FS0924_S19_L1.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,11 +26,27 @@ namespace FS0924_S19_L1.Services
             }
         }
 
-        public async Task<List<Student>?> GetAllStudentsAsyc()
+        public async Task<List<StudentDto>?> GetAllStudentsAsyc()
         {
             try
             {
-                return await _context.Students.ToListAsync();
+                var studentsList = await _context.Students.ToListAsync();
+
+                var result = new List<StudentDto>();
+
+                foreach (var student in studentsList)
+                {
+                    result.Add(
+                        new StudentDto()
+                        {
+                            Name = student.Name,
+                            Surname = student.Surname,
+                            EmailAddress = student.EmailAddress,
+                        }
+                    );
+                }
+
+                return result;
             }
             catch
             {
@@ -48,6 +65,34 @@ namespace FS0924_S19_L1.Services
             catch
             {
                 return false;
+            }
+        }
+
+        public async Task<StudentDto?> GetStudentbyEmailAsync(string email)
+        {
+            try
+            {
+                var student = await _context.Students.FirstOrDefaultAsync(s =>
+                    s.EmailAddress == email
+                );
+
+                if (student == null)
+                {
+                    return null;
+                }
+
+                var foundStudent = new StudentDto()
+                {
+                    Name = student.Name,
+                    Surname = student.Surname,
+                    EmailAddress = student.EmailAddress,
+                };
+
+                return foundStudent;
+            }
+            catch
+            {
+                return null;
             }
         }
     }
