@@ -39,6 +39,7 @@ namespace FS0924_S19_L1.Services
                     result.Add(
                         new StudentDto()
                         {
+                            StudentId = student.StudentId,
                             Name = student.Name,
                             Surname = student.Surname,
                             EmailAddress = student.EmailAddress,
@@ -83,6 +84,7 @@ namespace FS0924_S19_L1.Services
 
                 var foundStudent = new StudentDto()
                 {
+                    StudentId = student.StudentId,
                     Name = student.Name,
                     Surname = student.Surname,
                     EmailAddress = student.EmailAddress,
@@ -93,6 +95,50 @@ namespace FS0924_S19_L1.Services
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<bool> EditStudentAsync(Guid id, EditStudentRequestDto editStudent)
+        {
+            try
+            {
+                var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId == id);
+
+                if (student == null)
+                {
+                    return false;
+                }
+
+                student.Name = editStudent.Name;
+                student.Surname = editStudent.Surname;
+                student.EmailAddress = editStudent.EmailAddress;
+
+                return await TrySaveAsync();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteStudentByIdAsync(Guid id)
+        {
+            try
+            {
+                var student = await _context.Students.FindAsync(id);
+
+                if (student == null)
+                {
+                    return false;
+                }
+
+                _context.Students.Remove(student);
+
+                return await TrySaveAsync();
+            }
+            catch
+            {
+                return false;
             }
         }
     }

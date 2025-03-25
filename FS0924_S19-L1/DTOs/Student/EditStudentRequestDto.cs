@@ -2,11 +2,8 @@
 
 namespace FS0924_S19_L1.DTOs.Student
 {
-    public class StudentDto
+    public class EditStudentRequestDto
     {
-        [Required]
-        public required Guid StudentId { get; set; }
-
         [Required]
         public required string Name { get; set; }
 

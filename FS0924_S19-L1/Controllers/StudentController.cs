@@ -83,5 +83,28 @@ namespace FS0924_S19_L1.Controllers
 
             return Ok(new GetStudentResponseDto() { Message = "Student found!", Student = result });
         }
+
+        [HttpPut]
+        public async Task<IActionResult> EditStudent(
+            [FromQuery] Guid id,
+            [FromBody] EditStudentRequestDto editStudent
+        )
+        {
+            var result = await _studentService.EditStudentAsync(id, editStudent);
+
+            return result
+                ? Ok(new EditStudentResponseDto() { Message = "Student updated successfully!" })
+                : BadRequest(new EditStudentResponseDto() { Message = "Something went wrong!" });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
+        {
+            var result = await _studentService.DeleteStudentByIdAsync(id);
+
+            return result
+                ? Ok(new DeleteStudentResponseDto() { Message = "Student deleted successfully!" })
+                : BadRequest(new DeleteStudentResponseDto() { Message = "Something went wrong!" });
+        }
     }
 }
