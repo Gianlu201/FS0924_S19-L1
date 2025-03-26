@@ -1,6 +1,7 @@
 ﻿using FS0924_S19_L1.DTOs.Student;
 using FS0924_S19_L1.Models;
 using FS0924_S19_L1.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace FS0924_S19_L1.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllStudent()
         {
             var studentsList = await _studentService.GetAllStudentsAsyc();
